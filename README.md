@@ -26,4 +26,5 @@ I wrote the [firmware](lora_arduino.ino) using Arduino IDE, [RadioLib Library](h
 You can find the full Bill of Materials [here](LoRa_BOM.xlsx).
 
 ![Schematic](Image/lora_sch.png)
+
 ![3D View](Image/LoRa_3D_View.png)
