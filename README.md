@@ -1,14 +1,27 @@
 # LoRa_Puck
-Building a custom LoRa device 
-The SX1262 receives on two pins (RFI_P and RFI_N) while the antenna side is a single wire, so FL1 (0900FM15K0039) sits between them as a balun. The Radio frequency switch (PE4259) connects the one antenna to either the transmit or receive path, and I learned the radio flips it by itself through its DIO2 pin, which is what radio.setDio2AsRfSwitch(true) turns on in my firmware. 
+Building a LoRa project, based on the [HackClub LoRa Starter Project](https://blueprint.hackclub.com/starter-projects/lora#applying-these-concepts). I am using the [SX1262 by Semtech](https://www.semtech.com/products/wireless-rf/lora-connect/sx1262) for its radio module and [Microcontroller RP2040](https://pip-assets.raspberrypi.com/categories/814-rp2040/documents/RP-008371-DS-1-rp2040-datasheet.pdf). It's designed to send text from the Serial monitor over LoRa and a somewhat replica of it(one running the receiver firmware) can pick it up from a distance.
 
-The USB-C connects to the MCU via the USB_DM and USB_DP (yeah, the RP2040 doesn't come with it's own connector) with a 27 ohms resistor on each pin as stated by the datasheet. 
+# How it works
+The idea is pretty straightforward. I type a message into the Arduino Serial Monitor, and the RP2040 reads it. The RP2040 then sends the message as bytes to the SX1262 through SPI. The SX1262 takes those bytes, prepares them for LoRa transmission, and sends the signal through the antenna.
 
-I added a mini feature using an LED to indicate when a message or signal successful transmitted, connected one end to a 330 resistor before connecting to the GPIO pin (so I don't blow up the MCU) and the other to GND. 
-I used Ohm's law to calculate the resistance. We take the GPIO voltage of 3.3V and subtract the LED's forward voltage (assume 2V for a typical LED). That leaves 1.3V across the resistor. If we want approximately 4mA of current through the LED, we get 325 ohms, since 330Ω is a standard resistor value, I chose the closest available value.
+So, the RP2040 handles the instructions and the message, while the SX1262 handles the actual radio communication. The second LoRa device with matching radio settings would receive the message and turn the bytes back into readable text.
 
-When routing the PCB I moved the SX_DIO1 from GPIO17 TO GPIO24, SPI_NSS from GPIO21 to GPIO17, SX_NRST from GPIO23 to GPIO22 and SX_BUSY from GPIO22 to GPIO23. And yes, I did check the datasheet to make sure the new pins match the needed features. This made it easier to track from the SX1262 to the MCU. I added GND copper zones to the F.Cu, In1.Cu, and B.Cu layers to provide ground connections and then created a via fence around the RF module to reduice electrical noise. 
+I plan to improve on this project and eventually create a mini RFID gate system, where an RFID card will act as the transmitter and send a signal to a LoRa receiver. The receiver will then determine whether access should be granted and instruct the gate to open or remain closed.
 
+# Components
+| Component | What it does |
+|---|---|
+| **RP2040** | The main microcontroller. It reads the message and communicates with the SX1262. |
+| **SX1262** | The LoRa transceiver. It handles sending and receiving radio signals. |
+| **W25Q128JV** | External flash memory used to store the RP2040's program. |
+| **PE4259** | RF switch that connects the antenna to the transmit or receive path. |
+| **FL1 (0900FM15K0039)** | Balun that connects the SX1262's differential RF pins to the single-ended RF path. |
+| **Antenna** | Sends and receives the radio-frequency signal. |
+| **USB-C** | Provides the USB connection for programming and serial communication. |
+| **LED + 330 Ω resistor** | The LED is used as a transmission indicator, and the resistor limits the current flowing through it. |
+
+# Firmware
+I wrote the [firmware](lora_arduino.ino) using Arduino IDE, [RadioLib Library](https://github.com/jgromes/RadioLib/tree/master) for the SX1262 and [SPI library](https://github.com/arduino/ArduinoCore-avr/blob/master/libraries/SPI/src/SPI.h) to configure SPI communication.
 
 ![Schematic](lora_sch.png)
 ![3D View](LoRa_3D_View.png)
