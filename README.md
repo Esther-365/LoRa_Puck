@@ -23,5 +23,6 @@ I plan to improve on this project and eventually create a mini RFID gate system,
 # Firmware
 I wrote the [firmware](lora_arduino.ino) using Arduino IDE, [RadioLib Library](https://github.com/jgromes/RadioLib/tree/master) for the SX1262 and [SPI library](https://github.com/arduino/ArduinoCore-avr/blob/master/libraries/SPI/src/SPI.h) to configure SPI communication.
 
+You can find the full Bill of Materials here: [BOM.csv](./BOM.csv).
 ![Schematic](Image/lora_sch.png)
 ![3D View](Image/LoRa_3D_View.png)
